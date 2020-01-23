@@ -113,20 +113,33 @@ void lightLED(){
   digitalWrite(g, LOW);
   digitalWrite(b, LOW);
   digitalWrite(x, LOW);
+  
+  Serial.println(ranges[sizeof(ranges) / sizeof(ranges[0])]);
+  
+  //If the temperature is greater than the last value in the ranges array
+  if(temperature > ranges[sizeof(ranges) / sizeof(ranges[0])]){
+    //lights up the LEDs in the last column of the LEDs array
+    for (int y; y <= 3; y++){
+        digitalWrite(LEDs[y][sizeof(ranges) / sizeof(ranges[0]) + 1], HIGH);
+      }
+  } else {
   //goes through the ranges array and accesses its values
-  for(int x = 0; x < sizeof(ranges) / sizeof(ranges[0]) + 1; x++){
-    if(temperature < ranges[x]){
-      //light up corresponding LEDs
-      for (int y; y < 3; y++){
-        digitalWrite(LEDs[y][x], HIGH);
-        breakLoop = true;
+    for(int x = 0; x < sizeof(ranges) / sizeof(ranges[0]) + 1; x++){
+      //If the temperature is less than the range in ranges at index x
+       if(temperature < ranges[x]){
+         //light up corresponding LEDs
+         for (int y; y <= 3; y++){
+            digitalWrite(LEDs[y][x], HIGH);
+            Serial.print(LEDs[y][x]);
+            breakLoop = true;
+          }
+        }
+        if(breakLoop){
+          break;
+        }
       }
     }
-    if(breakLoop){
-      break;
-    }
   }
-}
 
 /*void lightLED(){
   Serial.print("Light: ");
