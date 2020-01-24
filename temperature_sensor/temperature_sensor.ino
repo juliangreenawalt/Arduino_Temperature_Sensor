@@ -57,7 +57,7 @@ int LEDs[3][sizeof(ranges) / sizeof(ranges[0]) + 1] = {
     };
 //END--------------------------------------------------------------------------------------------------------------
                 
-const double tuningConstant = 0.2;//change this to add an offset to temperature reading
+const double tuningConstant = 0.0;//change this to add an offset to temperature reading
 
 double temperature = 0.0;
 
@@ -124,7 +124,6 @@ void lightLED(){
     //lights up the LEDs in the last column of the LEDs array
     for (int y = 0; y < 3; y++){
         digitalWrite(LEDs[y][sizeof(ranges) / sizeof(ranges[0])], HIGH);
-        Serial.println("HighestLEDS");
     }
   } else {
     //goes through the ranges array and accesses its values
@@ -132,68 +131,14 @@ void lightLED(){
       //If the temperature is less than the range in ranges at index x
       if(temperature <= ranges[x]){
         //light up corresponding LEDs
-        Serial.println(ranges[x]);
         for (int y = 0; y < 3; y++){
           digitalWrite(LEDs[y][x], HIGH);
-          //DEBUGGING
-          Serial.print("Lighting: ");
-          Serial.println(LEDs[y][x]);
-          
           breakLoop = true;
         }
       }
       if(breakLoop){
-        //DEBUGGING
-        Serial.println("BREAKING OUT OF LOOP");
         break;
       }
     }
   }
 }
-
-/*void lightLED(){
-  Serial.print("Light: ");
-  if(temperature < lowTemp){
-    digitalWrite(b, HIGH);
-    digitalWrite(g, LOW);
-    digitalWrite(r, LOW);
-
-    Serial.println("Blue");
-  }
-  else if(temperature < lowMidTemp && nationals){
-    digitalWrite(b, HIGH);
-    digitalWrite(g, HIGH);
-    digitalWrite(r, LOW);
-
-    Serial.println("Blue Green");
-  }
-  else if(temperature < midHighTemp && nationals){
-    digitalWrite(b, LOW);
-    digitalWrite(g, HIGH);
-    digitalWrite(r, LOW);
-
-    Serial.println("Green");
-  }
-  else if(temperature < highTemp){
-    if(nationals){
-      digitalWrite(b, LOW);
-      digitalWrite(g, HIGH);
-      digitalWrite(r, HIGH);
-      
-      Serial.println("Green Red");
-    } else {
-      digitalWrite(b, LOW);
-      digitalWrite(g, HIGH);
-      digitalWrite(r, LOW);
-
-      Serial.println("Green");
-    }
-  }
-  else{ //This means that none of the previous conditions are met
-    digitalWrite(b, LOW);
-    digitalWrite(g, LOW);
-    digitalWrite(r, HIGH);
-
-    Serial.println("Red");
-  }
-}*/
