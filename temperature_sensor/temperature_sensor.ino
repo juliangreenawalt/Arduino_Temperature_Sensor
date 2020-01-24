@@ -49,20 +49,20 @@ int x = 9; // This pin is not connected to anything intentionally
 //                                                                                                               //
 //If you have any questions or this doesn't work text me @ 610-662-3339                                          //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-double ranges[] = {10.0, 20.0, 30.0, 40.0};
+double ranges[] = {15.0, 20.0, 30.0};
 int LEDs[3][sizeof(ranges) / sizeof(ranges[0]) + 1] = {
-                  {b, b, g, r, r},
-                  {x, g, x, g, x},
-                  {x, x, x, x, x}
+                  {b, x, x, b},
+                  {x, g, x, x},
+                  {x, x, r, r}
     };
 //END--------------------------------------------------------------------------------------------------------------
                 
-const double tuningConstant = 1.0;//change this to add an offset to temperature reading
+const double tuningConstant = 0.2;//change this to add an offset to temperature reading
 
 double temperature = 0.0;
 
 double getTemp(double voltage) {
-  return (A + B * log(((voltage / 5) * 8850) / (1 - (voltage / 5))) + C * pow(log(((voltage / 5) * 8850) / (1 - (voltage / 5))), 3)) * tuningConstant;
+  return (A + B * log(((voltage / 5) * 8850) / (1 - (voltage / 5))) + C * pow(log(((voltage / 5) * 8850) / (1 - (voltage / 5))), 3)) - tuningConstant;
 }
 
 void setup() {
@@ -116,14 +116,15 @@ void lightLED(){
   digitalWrite(x, LOW);
 
   //DEBUGGING
-  Serial.print("Max Range: ");
-  Serial.println(ranges[sizeof(ranges) / sizeof(ranges[0]) - 1]);
+  //Serial.print("Max Range: ");
+  //Serial.println(ranges[sizeof(ranges) / sizeof(ranges[0]) - 1]);
   
   //If the temperature is greater than the last value in the ranges array
   if(temperature > ranges[sizeof(ranges) / sizeof(ranges[0]) - 1]){
     //lights up the LEDs in the last column of the LEDs array
-    for (int y; y < 3; y++){
+    for (int y = 0; y < 3; y++){
         digitalWrite(LEDs[y][sizeof(ranges) / sizeof(ranges[0])], HIGH);
+        Serial.println("HighestLEDS");
     }
   } else {
     //goes through the ranges array and accesses its values
@@ -131,9 +132,9 @@ void lightLED(){
       //If the temperature is less than the range in ranges at index x
       if(temperature <= ranges[x]){
         //light up corresponding LEDs
-        for (int y; y < 3; y++){
+        Serial.println(ranges[x]);
+        for (int y = 0; y < 3; y++){
           digitalWrite(LEDs[y][x], HIGH);
-          
           //DEBUGGING
           Serial.print("Lighting: ");
           Serial.println(LEDs[y][x]);
