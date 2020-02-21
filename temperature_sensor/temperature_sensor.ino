@@ -3,20 +3,15 @@
 #include <avr/pgmspace.h>
 Adafruit_ADS1115 ads1115;
 
-
-
-//CHANGE THESE TEMPERATURES BASED ON THE RANGES GIVEN AT THE COMPETITION
-double lowTemp = 31.0;
-double lowMidTemp = 40.0;
-double midHighTemp = 40.0;
-double highTemp = 57.0;
-bool nationals = true; //Set true if at nationals. Disables/Enables the double led light up thing
-//ENDS HERE ------------------------------------------------------------------------------
-
 //Constants for voltage to temperature equation:
-const double A = 340.279;
-const double B = -39.4879;
-const double C = 0.0635671;
+//const double A = 340.279;
+//const double B = -39.4879;
+//const double C = 0.0635671;
+//Above constants are old.
+//For new equation
+const double A = 298.603;
+const double B = -17.0318;
+const double C = -13.6843;
 //ENDS HERE-------------------------------------
 
 int r = 11;
@@ -49,10 +44,10 @@ int x = 9; // This pin is not connected to anything intentionally
 //                                                                                                               //
 //If you have any questions or this doesn't work text me @ 610-662-3339                                          //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-double ranges[] = {15.0, 20.0, 30.0};
+double ranges[] = {25.0, 30.0, 40.0};
 int LEDs[3][sizeof(ranges) / sizeof(ranges[0]) + 1] = {
-                  {b, x, x, b},
-                  {x, g, x, x},
+                  {x, x, x, b},
+                  {x, g, x, g},
                   {x, x, r, r}
     };
 //END--------------------------------------------------------------------------------------------------------------
@@ -61,13 +56,18 @@ const double tuningConstant = 0.0;//change this to add an offset to temperature 
 
 double temperature = 0.0;
 
-double getTemp(double voltage) {
+double getTempOLD(double voltage) {
   return (A + B * log(((voltage / 5) * 8850) / (1 - (voltage / 5))) + C * pow(log(((voltage / 5) * 8850) / (1 - (voltage / 5))), 3)) - tuningConstant;
+}
+
+//Currently using this
+double getTemp(double voltage) {
+  return (A + B * log(((voltage / 5) * 8850) / (1 - (voltage / 5))) + C * log((voltage / 5) * 8850)) - tuningConstant;
 }
 
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(57600);
   ads1115.begin(); // Initialize ads1115
   ads1115.setGain(GAIN_ONE);
   Serial.println("Initalized");
@@ -87,7 +87,7 @@ void loop() {
  
   Serial.print("Voltage: ");
   float val = adc0 * .000125; 
-  Serial.println(val);
+  Serial.println(val, 21);
 
   temperature = getTemp(val);
 
@@ -104,7 +104,7 @@ void loop() {
 
   Serial.println("----------------------"); //This is just a divider to organize the serial monitor.
 
-  delay(500);
+  delay(5000);
 }
 
 void lightLED(){
