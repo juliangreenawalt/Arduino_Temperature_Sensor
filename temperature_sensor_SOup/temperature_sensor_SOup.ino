@@ -19,6 +19,8 @@ int g = 12;
 int b = 13;
 int x = 9; // This pin is not connected to anything intentionally
 
+int togglePin = 4;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //HERE IS HOW YOU USE THIS:                                                                                      //
 //r = red, g = green, b = blue, x = no LED                                                                       //
@@ -44,11 +46,11 @@ int x = 9; // This pin is not connected to anything intentionally
 //                                                                                                               //
 //If you have any questions or this doesn't work text me @ 610-662-3339                                          //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-double ranges[] = {25.0, 30.0, 40.0};
+double ranges[] = {15.0, 30.0};
 int LEDs[3][sizeof(ranges) / sizeof(ranges[0]) + 1] = {
-                  {x, x, x, b},
-                  {x, g, x, g},
-                  {x, x, r, r}
+                  {b, x, b,},
+                  {x, g, x,},
+                  {x, x, r,}
     };
 //END--------------------------------------------------------------------------------------------------------------
                 
@@ -77,12 +79,18 @@ void setup() {
   pinMode(g, OUTPUT);
   pinMode(b, OUTPUT);
   pinMode(x, OUTPUT);
+
+  pinMode(togglePin, OUTPUT);
 }
 
 void loop() {
 
- int16_t adc0, adc1, adc2, adc3;
- adc0 = ads1115.readADC_SingleEnded(0); 
+  //Connects thermistor to power via relay with delay to allow the values to be read
+  digitalWrite(togglePin, HIGH);
+  delay(200);
+
+  int16_t adc0, adc1, adc2, adc3;
+  adc0 = ads1115.readADC_SingleEnded(0); 
  
  
   Serial.print("Voltage: ");
@@ -93,7 +101,6 @@ void loop() {
 
   //Calls method
   lightLED();
-
   
   Serial.print("Temperature(C): ");
   Serial.println(temperature);
@@ -102,9 +109,12 @@ void loop() {
   Serial.print("Sensor Value: ");
   Serial.println(sensorValue);
 
+  //Disconnects thermistor to power via relay
+  digitalWrite(togglePin, LOW);
+  
   Serial.println("----------------------"); //This is just a divider to organize the serial monitor.
-
-  delay(500);
+  
+  delay(1000);
 }
 
 void lightLED(){
